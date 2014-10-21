@@ -5,6 +5,7 @@
 	"email": "sandhu.amandeep.s@gmail.com",
 	"dependencies": {
 		"yargs": "*",
-		"lodash": "*"
+		"lodash": "*",
+		"rsvp": "*"
 	}
 }
