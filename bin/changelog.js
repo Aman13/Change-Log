@@ -19,7 +19,6 @@ var util = require('util');
 
 mandrill_client = new mandrill.Mandrill('5oM9eU13RLqrIbo3YSDgEg');
 
-
 function tagForCommit(sha1) {
 	return new Promise(function(resolve, reject) {
 		child_process.execFile('git', ['tag', '--points-at', sha1], {cwd: location}, function(err, tag) {
@@ -65,12 +64,13 @@ log(location, argv.range, function(err, commits){
 		tree.commit.msg = tree.commit.msg.split('\n');
 		var expr = /^Merge pull request #(\d+) from ([^\s]+)/;
 		expr = expr.exec(tree.commit.msg[0]);
+	//	console.log(expr);
 		var pullUrl = locationurl + expr[1];
 	//	return tree.commit.commit + '<br/>' + tree.commit.author + '<ul>' + sub + '</ul>';
 	//	return _.template ('${author} <br/> ${msg}', tree.commit) + '<ul>' + sub + '</ul>';
-		return _.template ('${author} <br/>',tree.commit) + '<a href="'+pullUrl+'">details</a>' + _.template ('<br/> <b>Commit message:</b> <br/> ${msg[2]}', tree.commit) + '<ul>' + sub + '</ul>';
+		return _.template ('<body style="background-color:lightgrey"> ${author} <br/> version: ${tags} <br/>',tree.commit) + '<a href="'+pullUrl+'">Details</a>' + 
+		_.template ('<br/> <b>Commit message:</b> <br/> <br/> ${msg[2]} <br/> <br/>', tree.commit) + '<ul>' + sub + '</ul>';
 	}
-
 
 	var x = _.chain(commits)
 		.pluck('commit')
@@ -86,24 +86,24 @@ log(location, argv.range, function(err, commits){
 		var tree = { children: [] };
 		buildTree(commits[0], 0, tree);
 		var info = message(tree, 0);
+		console.log(info);
 
-		var email = {
-			'html': info,
-			'subject': 'example commit log',
-			'from_email': 'sandhu.amandeep.s@gmail.com',
-			'from_name': 'Aman',
-			'to': [{
-				'email': 'scorpion_013@hotmail.com',
-				'name': 'Bob',
-				'type': 'to'
-			}]
+		 // var email = {
+		 // 	'html': info,
+		 // 	'subject': 'example commit log',
+		 // 	'from_email': 'sandhu.amandeep.s@gmail.com',
+		 // 	'from_name': 'Aman',
+		 // 	'to': [{
+		 // 		'email': 'scorpion_013@hotmail.com',
+		 // 		'name': 'Bob',
+		 // 		'type': 'to'
+		 // 	}]
 
-		};
-
-		mandrill_client.messages.send({message: email}, function(result) {
-			console.log(result);
-		}, function(err) {
-			console.log('mistakes were made');
-		});
+		 // };
+		 // mandrill_client.messages.send({message: email}, function(result) {
+		 // 	console.log(result);
+		 // }, function(err) {
+		 // 	console.log('mistakes were made');
+		 // });
 	})
 });
