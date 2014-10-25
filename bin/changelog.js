@@ -11,6 +11,8 @@ var location = '/home/amansandhu/Documents/Projects/repo-log-test';
 
 var Promise = require('rsvp').Promise;
 
+var util = require('util');
+
 function tagForCommit(sha1) {
 	return new Promise(function(resolve, reject) {
 		child_process.execFile('git', ['tag', '--points-at', sha1], {cwd: location}, function(err, tag) {
@@ -19,12 +21,6 @@ function tagForCommit(sha1) {
 		});	
 	});
 }
-//9ce716d1559259d268681b0877865a79157c9762
-//e574985a0e28337f237616a52b89239c10f55106
-
-//tagForCommit('9ce716d1559259d268681b0877865a79157c9762', function(err, tag) {
-//	console.log(arguments);
-//});
 
 log(location, argv.range, function(err, commits){
 	if(err){
@@ -32,49 +28,38 @@ log(location, argv.range, function(err, commits){
 		return;
 	}
 
-	//var sha1 = fs.readFileSync(location+'/.git/refs/heads/master', 'utf8');
-
-	//console.log(sha1);
-
 	var some = _.map(commits, function(commit) {
 		 return _.template('Parent sha1 is ${ parent } author is ${author}', commit);
 	});
-
-//	var output = _.chain(commits)
-//		.filter(function(commit) { return commit.author === 'Aman13'; })
-//		.filter(function(commit) {return commit.tree === '11f57af878fabefc43927b1829309a8567ad4b4c';})
-//		.map('msg')
-//		.join('\n')		
-//		.value();
 
 	var index = _.indexBy(commits, 'commit');
 
 	_.forEach(commits, function(commit) {
 		commit.parent = _.map(commit.parent, function(commit) {
-			return index[commit] || { commit: commit, children: [] };
+			return index[commit] || { commit: commit, parent: [] };
 		});
 	});
 
-	_.forEach(commits, function(commit) {
-		_.forEach(commit.parent, function(parent) {
-			parent.children.push(commit);
+	function buildTree(commit, depth, tree) {
+		var ours = { commit: commit, children: [ ] };
+		if (commit.parent.length > 1)
+			tree.children.push(ours);
+		_.forEachRight(commit.parent, function(parent, i) {
+			buildTree(parent, depth + i, (i === 0) ? tree : ours);
 		});
-	});
-
-	function dfs(commit, depth) {
-
-		var shit = '';
-		for (var i = 0; i < depth; ++i)
-			shit += '\t';
-
-		console.log(shit+commit.tags+' ');
-		console.log(shit+'-----------------');
-		console.log();
-
-		_.each(commit.parent, function(parent, i) {
-			dfs(parent, depth+i);
-		}); //Need depth first search for multiple children
 	}
+
+	function message(tree, depth) {
+		
+		var sub = _.chain(tree.children).map(function(child) {
+			return '<li>' + message(child, depth+1) + '</li>';
+		}).join('').value();
+		tree.commit.msg.split('\n');
+		if(!tree.commit) return '<ul>' + sub + '</ul>';
+		//return tree.commit.commit + '<br/>' + tree.commit.author + '<ul>' + sub + '</ul>';
+		return _.template ('${author} <br/> ${msg}', tree.commit) + '<ul>' + sub + '</ul>';
+	}
+
 
 	var x = _.chain(commits)
 		.pluck('commit')
@@ -87,8 +72,8 @@ log(location, argv.range, function(err, commits){
 			pair[1].tags = pair[0];
 		});
 	}).then(function() {
-		dfs(commits[0], 0);
+		var tree = { children: [] };
+		buildTree(commits[0], 0, tree);
+		console.log(message(tree, 0));
 	})
-
-	//console.log(commits[1].parent[0].author);
 });
