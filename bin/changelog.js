@@ -1,42 +1,19 @@
 #!/usr/bin/env nodejs
-var argv = require('yargs').argv;
-var log = require('../lib/log'),
-	_ = require('lodash');
+var argv = require('yargs').argv,
+	log = require('../lib/log'),
+	message = require('../lib/message'),
+	buildTree = require('../lib/buildTree'),
+	tagForCommit = require('../lib/tagForCommit'),
+	mandrillEmail = require('../lib/mandrillEmail'),
+	_ = require('lodash'),
+	Promise = require('rsvp').Promise,
+	child_process = require('child_process');
 
-var fs = require('fs');
-
-var mandrill = require('mandrill-api/mandrill');
-
-var child_process = require('child_process');
-
-var location = '/home/amansandhu/Documents/Projects/repo-log-test';
-
-var locationurl = 'https://github.com/Aman13/repo-log-test/pull/';
-
-var Promise = require('rsvp').Promise;
-
-var util = require('util');
-
-mandrill_client = new mandrill.Mandrill('5oM9eU13RLqrIbo3YSDgEg');
-
-function tagForCommit(sha1) {
-	return new Promise(function(resolve, reject) {
-		child_process.execFile('git', ['tag', '--points-at', sha1], {cwd: location}, function(err, tag) {
-			if (err) return reject(err);
-			else return resolve(tag.split('\n').slice(0, -1));
-		});
-	});
-}
-
-log(location, argv.range, function(err, commits){
+log(argv.location, argv.range, function(err, commits){
 	if(err){
 		console.log('Error',err);
 		return;
 	}
-
-	var some = _.map(commits, function(commit) {
-		 return _.template('Parent sha1 is ${ parent } author is ${author}', commit);
-	});
 
 	var index = _.indexBy(commits, 'commit');
 
@@ -45,32 +22,6 @@ log(location, argv.range, function(err, commits){
 			return index[commit] || { commit: commit, parent: [] };
 		});
 	});
-
-	function buildTree(commit, depth, tree) {
-		var ours = { commit: commit, children: [ ] };
-		if (commit.parent.length > 1)
-			tree.children.push(ours);
-		_.forEachRight(commit.parent, function(parent, i) {
-			buildTree(parent, depth + i, (i === 0) ? tree : ours);
-		});
-	}
-
-	function message(tree, depth) {
-		
-		var sub = _.chain(tree.children).map(function(child) {
-			return '<li>' + message(child, depth+1) + '</li>';
-		}).join('').value();
-		if(!tree.commit) return '<ul>' + sub + '</ul>';
-		tree.commit.msg = tree.commit.msg.split('\n');
-		var expr = /^Merge pull request #(\d+) from ([^\s]+)/;
-		expr = expr.exec(tree.commit.msg[0]);
-	//	console.log(expr);
-		var pullUrl = locationurl + expr[1];
-	//	return tree.commit.commit + '<br/>' + tree.commit.author + '<ul>' + sub + '</ul>';
-	//	return _.template ('${author} <br/> ${msg}', tree.commit) + '<ul>' + sub + '</ul>';
-		return _.template ('<body style="background-color:lightgrey"> ${author} <br/> version: ${tags} <br/>',tree.commit) + '<a href="'+pullUrl+'">Details</a>' + 
-		_.template ('<br/> <b>Commit message:</b> <br/> <br/> ${msg[2]} <br/> <br/>', tree.commit) + '<ul>' + sub + '</ul>';
-	}
 
 	var x = _.chain(commits)
 		.pluck('commit')
@@ -85,25 +36,8 @@ log(location, argv.range, function(err, commits){
 	}).then(function() {
 		var tree = { children: [] };
 		buildTree(commits[0], 0, tree);
-		var info = message(tree, 0);
-		console.log(info);
-
-		 // var email = {
-		 // 	'html': info,
-		 // 	'subject': 'example commit log',
-		 // 	'from_email': 'sandhu.amandeep.s@gmail.com',
-		 // 	'from_name': 'Aman',
-		 // 	'to': [{
-		 // 		'email': 'scorpion_013@hotmail.com',
-		 // 		'name': 'Bob',
-		 // 		'type': 'to'
-		 // 	}]
-
-		 // };
-		 // mandrill_client.messages.send({message: email}, function(result) {
-		 // 	console.log(result);
-		 // }, function(err) {
-		 // 	console.log('mistakes were made');
-		 // });
-	})
+		var info = message(tree, 0, argv.locationUrl);
+		//mandrillEmail(info);
+		}
+	)
 });
