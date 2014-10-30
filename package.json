@@ -4,6 +4,8 @@
 	"author": "Amandeep Sandhu",
 	"email": "sandhu.amandeep.s@gmail.com",
 	"dependencies": {
-		"yargs": "*"
+		"yargs": "*",
+		"lodash": "*",
+		"rsvp": "*"
 	}
 }
