@@ -1,4 +1,7 @@
-#!/usr/bin/env nodejs
+#!/usr/bin/env node
+
+'use strict';
+
 var argv = require('yargs').argv,
 	log = require('../lib/log'),
 	message = require('../lib/message'),
@@ -37,6 +40,7 @@ log(argv.location, argv.range, function(err, commits){
 		var tree = { children: [] };
 		buildTree(commits[0], 0, tree);
 		var info = message(tree, 0, argv.locationUrl);
+		console.log(info);
 		//mandrillEmail(info);
 		}
 	)
