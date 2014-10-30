@@ -6,6 +6,7 @@
 	"dependencies": {
 		"yargs": "*",
 		"lodash": "*",
+		"mandrill-api": "*",
 		"rsvp": "*"
 	}
 }
