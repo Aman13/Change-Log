@@ -43,7 +43,7 @@ log(argv.location, argv.range, function(err, commits){
 		console.log(info);
 		mandrillEmail(info).then(function sendEmail(result) {
 			
-			.catch(function(err) {
+			catch(function(err) {
 				console.log('Mistakes');
 			})
 		});
