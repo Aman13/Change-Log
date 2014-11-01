@@ -43,6 +43,7 @@ log(argv.location, argv.range, function(err, commits){
 		console.log(info);
 
 		mandrillEmail(info).then(function sendEmail(result) {
+			console.log('donearino');
 		})
 		.catch(function(err) {
 		})
