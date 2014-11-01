@@ -41,7 +41,12 @@ log(argv.location, argv.range, function(err, commits){
 		buildTree(commits[0], 0, tree);
 		var info = message(tree, 0, argv.locationUrl);
 		console.log(info);
-		//mandrillEmail(info);
+		mandrillEmail(info).then(function sendEmail(result) {
+			
+			.catch(function(err) {
+				console.log('Mistakes');
+			})
+		});
 		}
 	)
 });
