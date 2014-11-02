@@ -10,6 +10,7 @@ var argv = require('yargs').argv,
 	mandrillEmail = require('../lib/mandrillEmail'),
 	_ = require('lodash'),
 	Promise = require('rsvp').Promise,
+	addrs = require('email-addresses'),
 	child_process = require('child_process');
 
 log(argv.location, argv.range, function(err, commits){
@@ -41,11 +42,25 @@ log(argv.location, argv.range, function(err, commits){
 		buildTree(commits[0], 0, tree);
 		var info = message(tree, 0, argv.locationUrl);
 		console.log(info);
+		var b = addrs.parseOneAddress(process.env['SENDER']);
+		var emailfrom = {
+			name: b.name,
+			email: b.address
+		};
+		var jews = addrs.parseAddressList(process.env['ADDRESSES']);
+		var emailinfo = _.map(jews, function(email) {
+			return {
+				name: email.name,
+				email: email.address,
+				type: 'to'
+			};
+		});
 
-		mandrillEmail(info).then(function sendEmail(result) {
+		mandrillEmail(info, emailinfo, emailfrom).then(function sendEmail(result) {
 			console.log('donearino');
 		})
 		.catch(function(err) {
+			console.log('ERROR LEL', err);
 		})
 	})
 });
