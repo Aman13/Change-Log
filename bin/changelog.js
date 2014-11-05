@@ -26,7 +26,7 @@ log(argv.location, argv.range, function(err, commits){
 			return index[commit] || { commit: commit, parent: [] };
 		});
 	});
-
+/*
 	var x = _.chain(commits)
 		.pluck('commit')
 		.map(tagForCommit)
@@ -37,12 +37,14 @@ log(argv.location, argv.range, function(err, commits){
 		_.each(pairs, function(pair) {
 			pair[1].tags = pair[0];
 		});
+
 	}).then(function() {
+*/
 		var tree = { children: [] };
-		buildTree(commits[0], 0, tree);
-		var info = message(tree, 0, argv.locationUrl);
+		buildTree(commits[0], tree);
+		var info = message(tree, argv.locationUrl);
 		console.log(info);
-		var b = addrs.parseOneAddress(process.env['SENDER']);
+	/*	var b = addrs.parseOneAddress(process.env['SENDER']);
 		var emailfrom = {
 			name: b.name,
 			email: b.address
@@ -62,5 +64,6 @@ log(argv.location, argv.range, function(err, commits){
 		.catch(function(err) {
 			console.log('ERROR LEL', err);
 		})
-	})
+	*/
+//	})
 });
