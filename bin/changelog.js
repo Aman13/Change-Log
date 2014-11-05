@@ -26,7 +26,8 @@ log(argv.location, argv.range, function(err, commits){
 			return index[commit] || { commit: commit, parent: [] };
 		});
 	});
-/*
+
+/*	**Grabs tags for commits for version number**
 	var x = _.chain(commits)
 		.pluck('commit')
 		.map(tagForCommit)
@@ -44,13 +45,15 @@ log(argv.location, argv.range, function(err, commits){
 		buildTree(commits[0], tree);
 		var info = message(tree, argv.locationUrl);
 		console.log(info);
-	/*	var b = addrs.parseOneAddress(process.env['SENDER']);
-		var emailfrom = {
-			name: b.name,
-			email: b.address
+
+		//Email parser
+		var from = addrs.parseOneAddress(process.env['SENDER']);
+		var emailFrom = {
+			name: from.name,
+			email: from.address
 		};
-		var jews = addrs.parseAddressList(process.env['ADDRESSES']);
-		var emailinfo = _.map(jews, function(email) {
+		var recievers = addrs.parseAddressList(process.env['ADDRESSES']);
+		var emailinfo = _.map(recievers, function(email) {
 			return {
 				name: email.name,
 				email: email.address,
@@ -58,12 +61,12 @@ log(argv.location, argv.range, function(err, commits){
 			};
 		});
 
-		mandrillEmail(info, emailinfo, emailfrom).then(function sendEmail(result) {
+		mandrillEmail(info, emailInfo, emailFrom).then(function sendEmail(result) {
 			console.log('donearino');
 		})
 		.catch(function(err) {
 			console.log('ERROR LEL', err);
 		})
-	*/
+
 //	})
 });
