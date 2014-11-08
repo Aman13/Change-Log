@@ -44,23 +44,23 @@ codeShip('master', function(err, projects) {
 		var info = message(tree, argv.locationUrl);
 		console.log(info);
 
-	//	var emailFrom = emailSender();
-	//	var emailInfo = emailReciever();
+		var emailFrom = emailSender();
+		var emailInfo = emailReciever();
 
 		//Email parser
-		var from = addrs.parseOneAddress(process.env['SENDER']);
-		var emailFrom = {
-			name: from.name,
-			email: from.address
-		};
-		var recievers = addrs.parseAddressList(process.env['ADDRESSES']);
-		var emailInfo = _.map(recievers, function(email) {
-			return {
-				name: email.name,
-				email: email.address,
-				type: 'to'
-			};
-		});
+		// var from = addrs.parseOneAddress(process.env['SENDER']);
+		// var emailFrom = {
+		// 	name: from.name,
+		// 	email: from.address
+		// };
+		// var recievers = addrs.parseAddressList(process.env['ADDRESSES']);
+		// var emailInfo = _.map(recievers, function(email) {
+		// 	return {
+		// 		name: email.name,
+		// 		email: email.address,
+		// 		type: 'to'
+		// 	};
+		// });
 
 		mandrillEmail(info, emailInfo, emailFrom).then(function sendEmail(result) {
 			console.log('donearino');
