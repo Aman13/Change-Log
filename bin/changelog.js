@@ -20,7 +20,11 @@ codeShip('master', function(err, projects) {
 	if (err) {
 		console.log('Error',err);
 	}
-	var range = projects[1].commit_id+'..'+projects[0].commit_id
+	if (projects.length > 1) {
+		var range = HEAD;
+	} else {
+		var range = projects[1].commit_id+'..'+projects[0].commit_id
+	}
 	log(argv.location, range, function(err, commits){
 		if(err){
 			console.log('Error',err);
