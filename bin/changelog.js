@@ -44,7 +44,7 @@ codeShip('master', function(err, projects) {
 		var info = message(tree, argv.locationUrl);
 		console.log(info);
 
-		var emailfrom = emailSender();
+		var emailFrom = emailSender();
 		var emailInfo = emailReciever();
 
 		//Email parser
