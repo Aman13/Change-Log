@@ -54,7 +54,7 @@ codeShip('master', function(err, projects) {
 			email: from.address
 		};
 		var recievers = addrs.parseAddressList(process.env['ADDRESSES']);
-		var emailinfo = _.map(recievers, function(email) {
+		var emailInfo = _.map(recievers, function(email) {
 			return {
 				name: email.name,
 				email: email.address,
