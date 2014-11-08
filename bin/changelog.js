@@ -21,7 +21,7 @@ codeShip('master', function(err, projects) {
 		console.log('Error',err);
 	}
 	if (projects.length < 1) {
-		var range = HEAD;
+		var range = 'HEAD';
 	} else {
 		var range = projects[1].commit_id+'..'+projects[0].commit_id
 	}
