@@ -67,6 +67,6 @@ codeShip('master', function(err, projects) {
 		})
 		.catch(function(err) {
 			console.log('ERROR LEL', err);
-		}
+		})
 	});
 });
