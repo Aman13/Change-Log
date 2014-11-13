@@ -16,7 +16,7 @@ var argv = require('yargs').argv,
 	addrs = require('email-addresses'),
 	child_process = require('child_process');
 
-codeShip('master', function(err, projects) {
+codeShip(process.env['BRANCH_NAME'], function(err, projects) {
 	if (err) {
 		console.log('Error',err);
 	}
